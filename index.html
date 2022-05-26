@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="mapbox/mapbox-gl.css">
+        <link rel="stylesheet" href="css/qgis2web.css">
+        <style>
+        #map {
+            width: 100%; 
+            height: 450px;
+        }
+        </style>
+        <title>Digital Soil Organic Carbon Map of the Wimmera Mallee Region</title>
+    </head>
+    <body>
+<header>
+<h1> Digital Soil Organic Carbon Map of the Wimmera Mallee Region </h1>
+</header>
+<p>This map displays Soil Organic Carbon content (SOC) as a percentage of the area of each individual field. It also displays the mean distribution of SOC across cadastral boundaries designated for agricultural landuse in the Wimmera Mallee Region of Victoria. Estimated SOC distribution is shown for three depths within the soil profile.</p>
+<style>
+
+#menu {
+background: #fff;
+position: absolute;
+z-index: 1;
+top: 10px;
+right: 10px;
+border-radius: 3px;
+width: 150px;
+border: 1px solid rgba(0, 128, 0, 1);
+font-family: 'Open Sans', sans-serif;
+}
+ 
+#menu a {
+font-size: 13px;
+font-family: "Century Gothic";
+color: #404040;
+display: block;
+margin: 0;
+padding: 0;
+padding: 10px;
+text-decoration: none;
+border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+text-align: center;
+}
+ 
+#menu a:last-child {
+border: none;
+}
+ 
+#menu a:hover {
+background-color:#98FB98;
+color: #404040;
+}
+ 
+#menu a.active {
+background-color: #228B22;
+color: #ffffff;
+}
+
+</style>
+
+        <div id="map">
+            <nav id="menu"></nav>
+              <div id="distance" class="distance-container"></div>
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="./mapbox/mapbox-gl.js"></script>
+        <script src="data/MeanOrganicCarbon15to30cm_1.js"></script>
+        <script src="data/MeanOrganicCarbon5to15cm_2.js"></script>
+        <script src="data/MeanOrganicCarbon0to5cm_3.js"></script>
+        <script src="data/OrganicCarbonByPropertyArea_4.js"></script>
+<script src="./mapbox/style.js"></script>
+<script src="./js/Autolinker.min.js"></script>
+<script>
+
+var map = new mapboxgl.Map({
+ container: 'map',
+ style: styleJSON,
+ center: [142.84488841758957,-35.685911852015685],
+ zoom: 6,
+});
+map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+map.addControl(new mapboxgl.AttributionControl({
+    customAttribution: '<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://github.com/mapbox/mapbox-gl-js" target="_blank">Mapbox GL JS</a> &middot; <a href="https://qgis.org" target="_blank">QGIS</a>',
+    compact: false
+}));
+var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+
+map.on('click', 'lyr_MeanOrganicCarbon15to30cm_1_0', function (e) {
+    var description = '<table>\
+                    <tr>\
+                        <th scope="row">lga</th>\
+                        <td>' + (e.features[0].properties['lga'] !== null ? autolinker.link(e.features[0].properties['lga'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['Region'] !== null ? autolinker.link(e.features[0].properties['Region'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['pr_propnum'] !== null ? autolinker.link(e.features[0].properties['pr_propnum'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">lu_desc</th>\
+                        <td>' + (e.features[0].properties['lu_desc'] !== null ? autolinker.link(e.features[0].properties['lu_desc'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['hectares'] !== null ? autolinker.link(e.features[0].properties['hectares'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['sum15_30'] !== null ? autolinker.link(e.features[0].properties['sum15_30'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">mean15_30</th>\
+                        <td>' + (e.features[0].properties['mean15_30'] !== null ? autolinker.link(e.features[0].properties['mean15_30'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['area(sqm)'] !== null ? autolinker.link(e.features[0].properties['area(sqm)'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['pctcarb'] !== null ? autolinker.link(e.features[0].properties['pctcarb'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>'
+
+    new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(description)
+        .addTo(map);
+});
+
+// Change the cursor to a pointer when the mouse is over the places layer.
+map.on('mouseenter', 'lyr_MeanOrganicCarbon15to30cm_1_0', function () {
+    map.getCanvas().style.cursor = 'pointer';
+});
+
+// Change it back to a pointer when it leaves.
+map.on('mouseleave', 'lyr_MeanOrganicCarbon15to30cm_1_0', function () {
+    map.getCanvas().style.cursor = '';
+});
+map.on('click', 'lyr_MeanOrganicCarbon5to15cm_2_0', function (e) {
+    var description = '<table>\
+                    <tr>\
+                        <th scope="row">lga</th>\
+                        <td>' + (e.features[0].properties['lga'] !== null ? autolinker.link(e.features[0].properties['lga'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['Region'] !== null ? autolinker.link(e.features[0].properties['Region'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['pr_propnum'] !== null ? autolinker.link(e.features[0].properties['pr_propnum'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">lu_desc</th>\
+                        <td>' + (e.features[0].properties['lu_desc'] !== null ? autolinker.link(e.features[0].properties['lu_desc'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['hectares'] !== null ? autolinker.link(e.features[0].properties['hectares'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['area(sqm)'] !== null ? autolinker.link(e.features[0].properties['area(sqm)'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">mean5_15</th>\
+                        <td>' + (e.features[0].properties['mean5_15'] !== null ? autolinker.link(e.features[0].properties['mean5_15'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['sum5_15'] !== null ? autolinker.link(e.features[0].properties['sum5_15'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['pctcarb'] !== null ? autolinker.link(e.features[0].properties['pctcarb'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>'
+
+    new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(description)
+        .addTo(map);
+});
+
+// Change the cursor to a pointer when the mouse is over the places layer.
+map.on('mouseenter', 'lyr_MeanOrganicCarbon5to15cm_2_0', function () {
+    map.getCanvas().style.cursor = 'pointer';
+});
+
+// Change it back to a pointer when it leaves.
+map.on('mouseleave', 'lyr_MeanOrganicCarbon5to15cm_2_0', function () {
+    map.getCanvas().style.cursor = '';
+});
+map.on('click', 'lyr_MeanOrganicCarbon0to5cm_3_0', function (e) {
+    var description = '<table>\
+                    <tr>\
+                        <th scope="row">lga</th>\
+                        <td>' + (e.features[0].properties['lga'] !== null ? autolinker.link(e.features[0].properties['lga'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['Region'] !== null ? autolinker.link(e.features[0].properties['Region'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['pr_propnum'] !== null ? autolinker.link(e.features[0].properties['pr_propnum'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">lu_desc</th>\
+                        <td>' + (e.features[0].properties['lu_desc'] !== null ? autolinker.link(e.features[0].properties['lu_desc'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['hectares'] !== null ? autolinker.link(e.features[0].properties['hectares'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['sum0_5'] !== null ? autolinker.link(e.features[0].properties['sum0_5'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">mean0_5</th>\
+                        <td>' + (e.features[0].properties['mean0_5'] !== null ? autolinker.link(e.features[0].properties['mean0_5'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['area(sqm)'] !== null ? autolinker.link(e.features[0].properties['area(sqm)'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['pctcarb'] !== null ? autolinker.link(e.features[0].properties['pctcarb'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>'
+
+    new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(description)
+        .addTo(map);
+});
+
+// Change the cursor to a pointer when the mouse is over the places layer.
+map.on('mouseenter', 'lyr_MeanOrganicCarbon0to5cm_3_0', function () {
+    map.getCanvas().style.cursor = 'pointer';
+});
+
+// Change it back to a pointer when it leaves.
+map.on('mouseleave', 'lyr_MeanOrganicCarbon0to5cm_3_0', function () {
+    map.getCanvas().style.cursor = '';
+});
+map.on('click', 'lyr_OrganicCarbonByPropertyArea_4_0', function (e) {
+    var description = '<table>\
+                    <tr>\
+                        <th scope="row">lga</th>\
+                        <td>' + (e.features[0].properties['lga'] !== null ? autolinker.link(e.features[0].properties['lga'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['cma'] !== null ? autolinker.link(e.features[0].properties['cma'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['pr_propnum'] !== null ? autolinker.link(e.features[0].properties['pr_propnum'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">lu_desc</th>\
+                        <td>' + (e.features[0].properties['lu_desc'] !== null ? autolinker.link(e.features[0].properties['lu_desc'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['hectares'] !== null ? autolinker.link(e.features[0].properties['hectares'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['areas(sqm)'] !== null ? autolinker.link(e.features[0].properties['areas(sqm)'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (e.features[0].properties['totalcarb'] !== null ? autolinker.link(e.features[0].properties['totalcarb'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">pcttotcarb</th>\
+                        <td>' + (e.features[0].properties['pcttotcarb'] !== null ? autolinker.link(e.features[0].properties['pcttotcarb'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>'
+
+    new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(description)
+        .addTo(map);
+});
+
+// Change the cursor to a pointer when the mouse is over the places layer.
+map.on('mouseenter', 'lyr_OrganicCarbonByPropertyArea_4_0', function () {
+    map.getCanvas().style.cursor = 'pointer';
+});
+
+// Change it back to a pointer when it leaves.
+map.on('mouseleave', 'lyr_OrganicCarbonByPropertyArea_4_0', function () {
+    map.getCanvas().style.cursor = '';
+});
+    var toggleableLayerIds = ['lyr_OrganicCarbonByPropertyArea_4_0', 'Organic Carbon % By Property Area','lyr_MeanOrganicCarbon0to5cm_3_0', 'Mean Organic Carbon 0 to 5cm','lyr_MeanOrganicCarbon5to15cm_2_0', 'Mean Organic Carbon 5 to 15cm','lyr_MeanOrganicCarbon15to30cm_1_0', 'Mean Organic Carbon 15 to 30cm','lyr_GoogleSatellite_0_0', 'Google Satellite'];
+
+    for (var i = 0; i < toggleableLayerIds.length; i=i+2) {
+        var id = toggleableLayerIds[i];
+        var layerName = toggleableLayerIds[i+1]
+
+        var link = document.createElement('a');
+        link.href = '#';
+        link.className = 'active';
+        link.layer = id;
+        link.textContent = layerName;
+
+        link.onclick = function (e) {
+            var clickedLayer = this.layer;
+            e.preventDefault();
+            e.stopPropagation();
+
+            var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
+
+            if (typeof visibility === 'undefined' || visibility == 'visible') {
+                map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+                this.className = '';
+            } else {
+                this.className = 'active';
+                map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+            }
+        };
+
+        var layers = document.getElementById('menu');
+        layers.appendChild(link);
+    }</script>
+    </body>
+</html>
